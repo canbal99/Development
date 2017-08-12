@@ -24,7 +24,7 @@ using namespace std;
 // T: 11
 class ACGTString {
 public:
-    ACGTString(const string& str) /*: array(str.length()*2)*/ {
+    ACGTString(const string& str) {
         array.resize(str.length()*2);
         for (int i=0;i<str.length();i++) {
             array[2*i] = str[i]=='G' || str[i]=='T';

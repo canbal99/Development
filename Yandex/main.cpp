@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
  * 
  * Some tricks
  * In constructors, don't do any unnecessary thing (like Zero-Initialize) if you have an array of this object
- * don't use clear, use r esize(0) (if you don't need to free memory)
+ * don't use clear, use resize(0) (if you don't need to free memory)
  * worst->best  qsort < sort < partial_sort < partition
  * try to use inline functions
  * 
