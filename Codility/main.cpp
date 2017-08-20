@@ -1,17 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// you can use includes, for example:
+// #include <algorithm>
 
-/* 
- * File:   main.cpp
- * Author: can
- *
- * Created on August 19, 2017, 8:38 PM
- */
+// you can write to stdout for debugging purposes, e.g.
+// cout << "this is a debug message" << endl;
 
-#include <cstdlib>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -19,13 +11,17 @@
 
 using namespace std;
 
-#define __TEST__
+//#define __TEST__
 #define MAX(x,y)     ((x)>(y)?(x):(y))
 
 struct Piece {
     int x;
     int y;
     int value;
+    bool alreadyBeaten;
+    
+    Piece() : x(0), y(0), value(0), alreadyBeaten(false) {};
+    
     bool isEqual(const Piece& piece) const {
         return piece.x==x && piece.y==y;
     }
@@ -36,13 +32,13 @@ struct Piece {
         return abs(piece.x-x) == 1 && abs(piece.y-y) == 1;
     }
     Piece projection(const Piece& piece, bool pos) const {
-        Piece temp = {0,0,0};
+        Piece temp = Piece();
         temp.x = pos ? x+(piece.x-x+piece.y-y)/2 : x+(piece.x-x-piece.y+y)/2;
         temp.y = pos ? y+(piece.x-x+piece.y-y)/2 : y-(piece.x-x-piece.y+y)/2;
         return temp;
     }
     Piece findNextPositionAfterBeating(const Piece& piece) const {
-        Piece temp = {0,0,0};
+        Piece temp = Piece();
         temp.x = x<piece.x ? piece.x+1 : piece.x-1;
         temp.y = y<piece.y ? piece.y+1 : piece.y-1;
         return temp;
@@ -66,8 +62,10 @@ struct NegativeAxis {
 };
 
 void printPiece(const Piece& piece, string title="") {
-    if (title.length()>0) cout << title << endl;
-    cout << "x:" << piece.x << " y:" << piece.y << " value: " << piece.value << endl;
+    static int test = 30;
+    if (test-->0) return;
+    if (title.length()>0) cout << title << " ";
+    cout << "x:" << piece.x << " y:" << piece.y << " value: " << piece.value << " deleted:" << piece.alreadyBeaten << endl;
 }
 
 template <class T>
@@ -81,14 +79,14 @@ void printSet(set<Piece,T>& axis, string title="") {
 class GameBoard {
 public:
     GameBoard(vector<int> &X, vector<int> &Y, string &T) {
-        Piece temp;
-        for (int i=0; i<T.size();i++) {
+        Piece temp = Piece();
+        for (int i=0; i<(int)T.size();i++) {
             temp.x = X[i];
             temp.y = Y[i];
             if (T[i]=='X') temp.value = 0;
             else temp.value = (T[i]=='p'?1:10);
-            insertPieceToSets(temp);
             if (temp.value==0) myPiece = temp;
+            else insertPieceToSets(temp);
         }
         
 #ifdef __TEST__
@@ -105,32 +103,38 @@ public:
 private:
     int findMaxValue(const Piece& startFromPiece) {
         int valueOnPosForw = findMaxValue(startFromPiece, true, true);
-        int valueOnPosBack = findMaxValue(startFromPiece, false, true);
-        int valueOnNegForw = findMaxValue(startFromPiece, true, false);
+        int valueOnPosBack = 0;
+        int valueOnNegForw = 0;
         int valueOnNegBack = findMaxValue(startFromPiece, false, false);
         return MAX(MAX(valueOnPosForw,valueOnPosBack),MAX(valueOnNegForw,valueOnNegBack));
     }
     
     int findMaxValue(const Piece& startFromPiece, bool FORWARD, bool POSITIVE) {
         int value=0, curr, max;
-        Piece tempPos, tempMyPiece, tempBeatenPiece;
+        Piece tempPos;
 #ifdef __TEST__
         cout << endl << ">>> calling findMaxValue " << FORWARD << " " << POSITIVE << endl;
+        static int test = 0;
+        if (startFromPiece.x==1 && startFromPiece.y==7 && test++>0) {
         printPiece(startFromPiece, "startFromPiece:");
         printSet<PositiveAxis>(positiveAxis, "Positive:");
         printSet<NegativeAxis>(negativeAxis, "Negative:");
+        }
 #endif
-        auto myPieceOnPos = POSITIVE ? positiveAxis.find(startFromPiece) : negativeAxis.find(startFromPiece);
+        auto nextItemOnPos = POSITIVE ? positiveAxis.upper_bound(startFromPiece) : negativeAxis.upper_bound(startFromPiece);
+        if (!FORWARD) iterate(&nextItemOnPos, FORWARD, POSITIVE);
+        
 #ifdef __TEST__
-        printPiece(*myPieceOnPos, "myPieceOnPos:");
+        printPiece(*nextItemOnPos, "nextItemOnPos Initial:");
 #endif
-        auto nextItemOnPos = myPieceOnPos;
-        iterate(&nextItemOnPos, FORWARD, POSITIVE);
+        //if ((*nextItemOnPos).alreadyBeaten)
+        if (!checkIfEndOfIteration(&nextItemOnPos,FORWARD,POSITIVE) && (*nextItemOnPos).alreadyBeaten)
+            iterate(&nextItemOnPos, FORWARD, POSITIVE);
         while (!checkIfEndOfIteration(&nextItemOnPos,FORWARD,POSITIVE)) {
 #ifdef __TEST__
-        printPiece(*nextItemOnPos, "nextItemOnPos:");
+        printPiece(*nextItemOnPos, "nextItemOnPos Final:");
 #endif
-            if ((*myPieceOnPos).canBeat(*nextItemOnPos, POSITIVE)) {
+            if (startFromPiece.canBeat(*nextItemOnPos, POSITIVE)) {
 #ifdef __TEST__
         printPiece(*nextItemOnPos, "CAN BE BEATEN");
 #endif
@@ -138,9 +142,6 @@ private:
                 auto nextNextItemOnPos = nextItemOnPos;
                 iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                 
-                tempMyPiece = *myPieceOnPos;
-                erasePieceFromSets(*myPieceOnPos);
-                tempBeatenPiece = *nextItemOnPos;
                 erasePieceFromSets(*nextItemOnPos);
                 
                 curr = 0; max = 0;
@@ -153,33 +154,30 @@ private:
                         break;
                     } 
                     
-                    tempPos = (*myPieceOnPos).projection(*nextNextItemOnPos, POSITIVE);
+                    tempPos = startFromPiece.projection(*nextNextItemOnPos, POSITIVE);
                     if ((*nextItemOnPos).isEqual(tempPos)) {
                         iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                         continue;
                     }
 
-                    if (!insertPieceToSets(tempPos)) {
+                    if (existInSet(tempPos)) {
                         iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                         continue;
                     }
 
                     curr = findMaxValue(tempPos);
-                    erasePieceFromSets(tempPos);
                     
                     if (max<curr) max=curr;
                     iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                 }
                 if (value>0 && max==0) {
-                    tempPos = (*myPieceOnPos).findNextPositionAfterBeating(*nextItemOnPos);
-                    if (insertPieceToSets(tempPos)) {
+                    tempPos = startFromPiece.findNextPositionAfterBeating(*nextItemOnPos);
+                    if (!existInSet(tempPos)) {
                         max = findMaxValue(tempPos);
-                        erasePieceFromSets(tempPos);
                     }
                 }
                 value += max;
-                insertPieceToSets(tempBeatenPiece);
-                insertPieceToSets(tempMyPiece);
+                insertPieceToSets(*nextItemOnPos);
                 break;
             } else {
 #ifdef __TEST__
@@ -195,10 +193,17 @@ private:
     }
     
     void iterate(void *iterator, bool FORWARD, bool POSITIVE) {
+        do {
+            iterate_old(iterator, FORWARD, POSITIVE);
+        } while (!checkIfEndOfIteration(iterator, FORWARD, POSITIVE) && alreadyBeaten(iterator, FORWARD, POSITIVE));
+    }
+    
+    void iterate_old(void *iterator, bool FORWARD, bool POSITIVE) {
         if (POSITIVE) {
             set<Piece, PositiveAxis>::iterator &iter(*(set<Piece, PositiveAxis>::iterator*)(iterator));
             if (FORWARD) {
-                iter++;
+                if (iter != positiveAxis.end())
+                    iter++;
             } else if (iter==positiveAxis.begin()) {
                 iter = positiveAxis.end();
             } else {
@@ -207,7 +212,8 @@ private:
         } else {
             set<Piece, NegativeAxis>::iterator &iter(*(set<Piece, NegativeAxis>::iterator*)(iterator));
             if (FORWARD) {
-                iter++;
+                if (iter != negativeAxis.end())
+                    iter++;
             } else if (iter==negativeAxis.begin()) {
                 iter = negativeAxis.end();
             } else {
@@ -226,24 +232,52 @@ private:
         }
     }
     
+    bool existInSet(const Piece& piece) {
+        auto found = positiveAxis.find(piece);
+        return found!=positiveAxis.end() && !(*found).alreadyBeaten;
+    }
+    
     void erasePieceFromSets(const Piece& piece) {
 #ifdef __TEST__
         printPiece(piece, "Erasing:");
 #endif
-        positiveAxis.erase(piece);
-        negativeAxis.erase(piece);
+        auto positive = positiveAxis.find(piece);
+        if (positive!=positiveAxis.end()) {
+            ((Piece&)(*positive)).alreadyBeaten = true;
+        }
+        auto negative = negativeAxis.find(piece);
+        if (negative!=negativeAxis.end()) {
+            ((Piece&)(*negative)).alreadyBeaten = true;
+        }
     }
     
-    bool insertPieceToSets(const Piece& piece) {
+    void insertPieceToSets(const Piece& piece) {
 #ifdef __TEST__
         printPiece(piece, "Inserting:");
 #endif
-        if (positiveAxis.insert(piece).second)
-            return negativeAxis.insert(piece).second;
-#ifdef __TEST__
-        printPiece(piece, "Inserting failed!!!:");
-#endif
-        return false;
+        auto positive = positiveAxis.find(piece);
+        if (positive!=positiveAxis.end()) {
+            ((Piece&)(*positive)).alreadyBeaten = false;
+        } else {
+            positiveAxis.insert(piece);
+        }
+        
+        auto negative = negativeAxis.find(piece);
+        if (negative!=negativeAxis.end()) {
+            ((Piece&)(*negative)).alreadyBeaten = false;
+        } else {
+            negativeAxis.insert(piece);
+        }
+    }
+    
+    bool alreadyBeaten(void *iterator, bool FORWARD, bool POSITIVE) {
+        if (POSITIVE) {
+            set<Piece, PositiveAxis>::iterator &iter(*(set<Piece, PositiveAxis>::iterator*)(iterator));
+            return (*iter).alreadyBeaten;
+        } else {
+            set<Piece, NegativeAxis>::iterator &iter(*(set<Piece, NegativeAxis>::iterator*)(iterator));
+            return (*iter).alreadyBeaten;
+        }
     }
     
 private:
@@ -252,6 +286,7 @@ private:
     Piece myPiece;
 };
 
+
 int solution(vector<int> &X, vector<int> &Y, string &T) {
     GameBoard board(X, Y, T);
     return board.findMaxValue();
@@ -259,29 +294,31 @@ int solution(vector<int> &X, vector<int> &Y, string &T) {
 
 int main(int argc, char** argv) {
 
-    {/*
-    vector<int> X = {3, 5, 1, 6};
-    vector<int> Y = {1, 3, 3, 8};
-    string T = "Xpqp";
+    do {/*
+    vector<int> X1 = {3, 5, 1, 6};
+    vector<int> Y1 = {1, 3, 3, 8};
+    string T1 = "Xpqp";
     cout << "Answer should be 10" << endl;
-    cout << solution(X,Y,T) << endl;*/
-    }
+    int result1 = solution(X1,Y1,T1);
+    cout << "RESULT: " << result1 << endl;
+    if (result1!=10) break;
     
-    {
-    vector<int> X = {0, 3, 5, 1, 6};
-    vector<int> Y = {4, 1, 3, 3, 8};
-    string T = "pXpqp";
+    vector<int> X2 = {0, 3, 5, 1, 6};
+    vector<int> Y2 = {4, 1, 3, 3, 8};
+    string T2 = "pXpqp";
     cout << "Answer should be 2" << endl;
-    cout << solution(X,Y,T) << endl;
-    }
+    int result2 = solution(X2,Y2,T2);
+    cout << "RESULT: " << result2 << endl;
+    if (result2!=2) break;*/
     
-    {/*
-    vector<int> X = {0, 6, 2, 5, 3, 0};
-    vector<int> Y = {4, 8, 2, 3, 1, 6};
-    string T = "ppqpXp";
+    vector<int> X3 = {0, 6, 2, 5, 3, 0};
+    vector<int> Y3 = {4, 8, 2, 3, 1, 6};
+    string T3 = "ppqpXp";
     cout << "Answer should be 12" << endl;
-    cout << solution(X,Y,T) << endl;*/
-    }
+    int result3 = solution(X3,Y3,T3);
+    cout << "RESULT: " << result3 << endl;
+    if (result3!=12) break;
+    } while (false);
             
     return 0;
 }
