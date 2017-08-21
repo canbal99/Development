@@ -62,8 +62,6 @@ struct NegativeAxis {
 };
 
 void printPiece(const Piece& piece, string title="") {
-    static int test = 30;
-    if (test-->0) return;
     if (title.length()>0) cout << title << " ";
     cout << "x:" << piece.x << " y:" << piece.y << " value: " << piece.value << " deleted:" << piece.alreadyBeaten << endl;
 }
@@ -103,23 +101,21 @@ public:
 private:
     int findMaxValue(const Piece& startFromPiece) {
         int valueOnPosForw = findMaxValue(startFromPiece, true, true);
-        int valueOnPosBack = 0;
-        int valueOnNegForw = 0;
+        int valueOnPosBack = 0; // findMaxValue(startFromPiece, false, true);
+        int valueOnNegForw = 0; // findMaxValue(startFromPiece, true, false);
         int valueOnNegBack = findMaxValue(startFromPiece, false, false);
         return MAX(MAX(valueOnPosForw,valueOnPosBack),MAX(valueOnNegForw,valueOnNegBack));
     }
     
     int findMaxValue(const Piece& startFromPiece, bool FORWARD, bool POSITIVE) {
         int value=0, curr, max;
-        Piece tempPos;
+        Piece tempPos, prevTempPos;
+        bool findMaxValueCalledForTempPos = false;
 #ifdef __TEST__
         cout << endl << ">>> calling findMaxValue " << FORWARD << " " << POSITIVE << endl;
-        static int test = 0;
-        if (startFromPiece.x==1 && startFromPiece.y==7 && test++>0) {
         printPiece(startFromPiece, "startFromPiece:");
         printSet<PositiveAxis>(positiveAxis, "Positive:");
         printSet<NegativeAxis>(negativeAxis, "Negative:");
-        }
 #endif
         auto nextItemOnPos = POSITIVE ? positiveAxis.upper_bound(startFromPiece) : negativeAxis.upper_bound(startFromPiece);
         if (!FORWARD) iterate(&nextItemOnPos, FORWARD, POSITIVE);
@@ -127,7 +123,6 @@ private:
 #ifdef __TEST__
         printPiece(*nextItemOnPos, "nextItemOnPos Initial:");
 #endif
-        //if ((*nextItemOnPos).alreadyBeaten)
         if (!checkIfEndOfIteration(&nextItemOnPos,FORWARD,POSITIVE) && (*nextItemOnPos).alreadyBeaten)
             iterate(&nextItemOnPos, FORWARD, POSITIVE);
         while (!checkIfEndOfIteration(&nextItemOnPos,FORWARD,POSITIVE)) {
@@ -147,14 +142,26 @@ private:
                 curr = 0; max = 0;
                 while (!checkIfEndOfIteration(&nextNextItemOnPos,FORWARD,POSITIVE)) {
                     if ((*nextItemOnPos).canBeat(*nextNextItemOnPos, POSITIVE)) {
+#ifdef __TEST__
+        printPiece(*nextNextItemOnPos, "Find next item on my way, so I don't need to check next elements");
+#endif
                         if ((*nextItemOnPos).isNeighbour(*nextNextItemOnPos, POSITIVE)) {
                             value = 0;
                             max = 0;
+#ifdef __TEST__
+        printPiece(*nextItemOnPos, "This is a neighbor so I cannot beat this item");
+#endif
                         }
                         break;
                     } 
                     
                     tempPos = startFromPiece.projection(*nextNextItemOnPos, POSITIVE);
+                    
+                    if (findMaxValueCalledForTempPos && prevTempPos.isEqual(tempPos)) {
+                        iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
+                        continue;
+                    }
+                    
                     if ((*nextItemOnPos).isEqual(tempPos)) {
                         iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                         continue;
@@ -166,15 +173,15 @@ private:
                     }
 
                     curr = findMaxValue(tempPos);
+                    findMaxValueCalledForTempPos = true;
+                    prevTempPos = tempPos;
                     
                     if (max<curr) max=curr;
                     iterate(&nextNextItemOnPos, FORWARD, POSITIVE);
                 }
-                if (value>0 && max==0) {
+                if (value>0 && !findMaxValueCalledForTempPos) {
                     tempPos = startFromPiece.findNextPositionAfterBeating(*nextItemOnPos);
-                    if (!existInSet(tempPos)) {
-                        max = findMaxValue(tempPos);
-                    }
+                    max = findMaxValue(tempPos);
                 }
                 value += max;
                 insertPieceToSets(*nextItemOnPos);
@@ -294,7 +301,7 @@ int solution(vector<int> &X, vector<int> &Y, string &T) {
 
 int main(int argc, char** argv) {
 
-    do {/*
+    do {
     vector<int> X1 = {3, 5, 1, 6};
     vector<int> Y1 = {1, 3, 3, 8};
     string T1 = "Xpqp";
@@ -309,7 +316,7 @@ int main(int argc, char** argv) {
     cout << "Answer should be 2" << endl;
     int result2 = solution(X2,Y2,T2);
     cout << "RESULT: " << result2 << endl;
-    if (result2!=2) break;*/
+    if (result2!=2) break;
     
     vector<int> X3 = {0, 6, 2, 5, 3, 0};
     vector<int> Y3 = {4, 8, 2, 3, 1, 6};
@@ -318,6 +325,15 @@ int main(int argc, char** argv) {
     int result3 = solution(X3,Y3,T3);
     cout << "RESULT: " << result3 << endl;
     if (result3!=12) break;
+    
+    vector<int> X4 = {0, 1, 3};
+    vector<int> Y4 = {0, 1, 3};
+    string T4 = "Xpq";
+    cout << "Answer should be 11" << endl;
+    int result4 = solution(X4,Y4,T4);
+    cout << "RESULT: " << result4 << endl;
+    if (result4!=11) break;
+    
     } while (false);
             
     return 0;
