@@ -39,19 +39,25 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gi7-jj-Rtd">
+                                <rect key="frame" x="0.0" y="376" width="375" height="291"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="buttonOK" destination="tWc-Bc-cT1" id="sP0-al-tOp"/>
+                        <outlet property="imageView" destination="gi7-jj-Rtd" id="GGe-Nf-NNz"/>
                         <outlet property="labelText" destination="rqe-4l-u2l" id="FlS-9f-8N9"/>
                         <outlet property="textField" destination="pt4-W6-jjo" id="Ulo-oW-J76"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1095" y="133"/>
+            <point key="canvasLocation" x="1093.5999999999999" y="132.68365817091455"/>
         </scene>
     </scenes>
 </document>
