@@ -16,12 +16,22 @@ class ImageCache {
   class var sharedCache: ImageCache {
     return _sharedCache
   }
+    
+    init() {
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIApplicationDidReceiveMemoryWarning, object: nil, queue: OperationQueue.main) { notification in
+            self.images.removeAll(keepingCapacity: false)
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidReceiveMemoryWarning, object: nil)
+    }
   
-  func setImage(image: UIImage, forKey key: String) {
+  func setImage(_ image: UIImage, forKey key: String) {
     images[key] = image
   }
   
-  func imageForKey(key: String) -> UIImage? {
+  func imageForKey(_ key: String) -> UIImage? {
     return images[key]
   }
 }
@@ -31,11 +41,11 @@ extension UIImage {
     let context = CIContext(options:nil)
     let filter = CIFilter(name:"CIPhotoEffectTonal")
     let input = CoreImage.CIImage(image: self)
-    filter.setValue(input, forKey: kCIInputImageKey)
-    let outputImage = filter.outputImage
+    filter?.setValue(input, forKey: kCIInputImageKey)
+    let outputImage = filter?.outputImage
     
-    let outImage = context.createCGImage(outputImage, fromRect: outputImage.extent())
-    let returnImage = UIImage(CGImage: outImage)
+    let outImage = context.createCGImage(outputImage!, from: outputImage!.extent)
+    let returnImage = UIImage.init(cgImage: outImage!)
     return returnImage
   }
 }

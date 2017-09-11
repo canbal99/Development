@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-let apiKey = "2bd9bc566325719127de8831766d1a36"
+let apiKey = "0f9ea75f0657368612c304e5920f2e41"
 
 struct FlickrSearchResults {
   let searchTerm : String
@@ -19,11 +19,11 @@ struct FlickrSearchResults {
 class FlickrPhoto : Equatable {
   let photoID : String
   let title: String
-  private let farm : Int
-  private let server : String
-  private let secret : String
+  fileprivate let farm : Int
+  fileprivate let server : String
+  fileprivate let secret : String
   
-  typealias ImageLoadCompletion = (image: UIImage?, error: NSError?) -> Void
+  typealias ImageLoadCompletion = (_ image: UIImage?, _ error: NSError?) -> Void
   
   init (photoID:String, title:String, farm:Int, server:String, secret:String) {
     self.photoID = photoID
@@ -33,37 +33,44 @@ class FlickrPhoto : Equatable {
     self.secret = secret
   }
   
-  func flickrImageURL(size:String = "m") -> NSURL {
-    return NSURL(string: "http://farm\(farm).staticflickr.com/\(server)/\(photoID)_\(secret)_\(size).jpg")!
+  func flickrImageURL(_ size:String = "m") -> URL {
+    return URL(string: "http://farm\(farm).staticflickr.com/\(server)/\(photoID)_\(secret)_\(size).jpg")!
   }
   
-  func loadThumbnail(completion: ImageLoadCompletion) {
-    loadImageFromURL(URL: flickrImageURL(size: "m")) { image, error in
-      completion(image: image, error: error)
+    func loadThumbnail(completion: @escaping ImageLoadCompletion) {
+        if let image = ImageCache.sharedCache.imageForKey(photoID) {
+            completion(image, nil)
+        } else {
+            loadImageFromURL(URL: flickrImageURL("m") as NSURL) { image, error in
+                if let image = image {
+                    ImageCache.sharedCache.setImage(image, forKey: self.photoID)
+                }
+                completion(image, error)
+            }
+        }
     }
-  }
 
-  func loadLargeImage(completion: ImageLoadCompletion) {
-    loadImageFromURL(URL: flickrImageURL(size: "b"), completion: completion)
+    func loadLargeImage(_ completion: @escaping ImageLoadCompletion) {
+    loadImageFromURL(URL: flickrImageURL("b") as NSURL, completion)
   }
   
-  func loadImageFromURL(#URL: NSURL, completion: ImageLoadCompletion) {
-    let loadRequest = NSURLRequest(URL: URL)
+  func loadImageFromURL(URL: NSURL, _ completion: @escaping ImageLoadCompletion) {
+    let loadRequest = URLRequest(url: URL as URL)
     NSURLConnection.sendAsynchronousRequest(loadRequest,
-      queue: NSOperationQueue.mainQueue()) {
+                                            queue: OperationQueue.main) {
         response, data, error in
         
         if error != nil {
-          completion(image: nil, error: error)
+            completion(nil, error as! NSError)
           return
         }
         
         if data != nil {
-          completion(image: UIImage(data: data), error: nil)
+            completion(UIImage(data: data!), nil)
           return
         }
         
-        completion(image: nil, error: nil)
+                                                completion(nil, nil)
     }
   }
 }
@@ -72,10 +79,10 @@ class FlickrPhoto : Equatable {
 extension FlickrPhoto {
   var isFavourite: Bool {
     get {
-      return NSUserDefaults.standardUserDefaults().boolForKey(photoID)
+      return UserDefaults.standard.bool(forKey: photoID)
     }
     set {
-      NSUserDefaults.standardUserDefaults().setBool(newValue, forKey: photoID)
+      UserDefaults.standard.set(newValue, forKey: photoID)
     }
   }
 }
@@ -86,36 +93,37 @@ func == (lhs: FlickrPhoto, rhs: FlickrPhoto) -> Bool {
 
 class Flickr {
   
-  let processingQueue = NSOperationQueue()
+  let processingQueue = OperationQueue()
   
-  func searchFlickrForTerm(searchTerm: String, completion : (results: FlickrSearchResults?, error : NSError?) -> Void){
+  func searchFlickrForTerm(_ searchTerm: String, completion : @escaping (_ results: FlickrSearchResults?, _ error : NSError?) -> Void){
     
     let searchURL = flickrSearchURLForSearchTerm(searchTerm)
-    let searchRequest = NSURLRequest(URL: searchURL)
+    let searchRequest = URLRequest(url: searchURL)
     
     NSURLConnection.sendAsynchronousRequest(searchRequest, queue: processingQueue) {response, data, error in
       if error != nil {
-        completion(results: nil,error: error)
+        completion(nil,error as! NSError)
         return
       }
       
       var JSONError : NSError?
-      let resultsDictionary = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(0), error: &JSONError) as? NSDictionary
+        let resultsDictionary = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions(rawValue:0))) as? NSDictionary
+        //JSONSerialization.JSONObjectWithData(data, options:JSONSerialization.ReadingOptions(0), error: &JSONError) as? NSDictionary
       if JSONError != nil {
-        completion(results: nil, error: JSONError)
+        completion(nil, JSONError)
         return
       }
       
       switch (resultsDictionary!["stat"] as! String) {
       case "ok":
-        println("Results processed OK")
+        print("Results processed OK")
       case "fail":
         let APIError = NSError(domain: "FlickrSearch", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:resultsDictionary!["message"]!])
-        completion(results: nil, error: APIError)
+        completion(nil, APIError)
         return
       default:
         let APIError = NSError(domain: "FlickrSearch", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"Unknown API response"])
-        completion(results: nil, error: APIError)
+        completion(nil, APIError)
         return
       }
       
@@ -136,16 +144,16 @@ class Flickr {
         return flickrPhoto
       }
       
-      dispatch_async(dispatch_get_main_queue(), {
-        completion(results:FlickrSearchResults(searchTerm: searchTerm, searchResults: flickrPhotos), error: nil)
+      DispatchQueue.main.async(execute: {
+        completion(FlickrSearchResults(searchTerm: searchTerm, searchResults: flickrPhotos), nil)
       })
     }
   }
   
-  private func flickrSearchURLForSearchTerm(searchTerm:String) -> NSURL {
-    let escapedTerm = searchTerm.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+  fileprivate func flickrSearchURLForSearchTerm(_ searchTerm:String) -> URL {
+    let escapedTerm = searchTerm.addingPercentEscapes(using: String.Encoding.utf8)!
     let URLString = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&text=\(escapedTerm)&per_page=30&format=json&nojsoncallback=1"
-    return NSURL(string: URLString)!
+    return URL(string: URLString)!
   }
   
   
