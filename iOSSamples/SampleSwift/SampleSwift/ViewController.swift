@@ -67,8 +67,55 @@ class ViewController: UIViewController {
     @IBAction func onButtonClicked(_ sender: Any) {
         self.labelText.text = self.textField.text
         
+        // SAMPLE HTTP REQUEST
+        if let url = URL(string: "https://www.facebook.com") {
+            //let session = URLSession.init(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+            let task = URLSession.shared.dataTask(with: url) { (data:Data?, response:URLResponse?, error:Error?) in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else if let string = String.init(data: data!, encoding: String.Encoding.utf8) {
+                    print(string)
+                }
+            }
+            task.resume()
+        }
+        
         autoreleasepool {
             /* code */
+        }
+        
+        var remainder : Int32 = 5
+        //let remainderPointer = UnsafeMutablePointer<Int32>(&remainder)
+        var division = quotient(10, 3, &remainder/*remainderPointer*/)
+        print("division: \(division) remainder: \(remainder)")
+        
+        
+        
+        func takesARawPointer(_ p: UnsafeRawPointer?)  {
+        }
+        func takesAMutableRawPointer(_ p: UnsafeMutableRawPointer?)  {
+        }
+        func takesAnAutoreleasingPointer(_ p: AutoreleasingUnsafeMutablePointer<NSDate?>) {
+            // will be allocated inside this fuction (like a pointer pointer (int**))
+        }
+        
+        var xx: Float = 0.0, yy: Int = 0
+        takesARawPointer(&xx)
+        takesARawPointer(&yy)
+        takesARawPointer([1.0, 2.0, 3.0] as [Float])
+        var intArray = Array.init(repeating: 0, count: 10)
+        takesARawPointer(&intArray)
+        takesAMutableRawPointer(&intArray);
+        var zz: NSDate? = nil
+        takesAnAutoreleasingPointer(&zz)
+        
+        
+        
+        var object: Any? = SomeClass()
+        if let can = object as? SomeClass {
+            print("SomeClass")
+        } else {
+            print("not SomeClass")
         }
         
         
