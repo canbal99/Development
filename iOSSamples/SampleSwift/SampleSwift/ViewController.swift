@@ -67,6 +67,13 @@ class ViewController: UIViewController {
     @IBAction func onButtonClicked(_ sender: Any) {
         self.labelText.text = self.textField.text
         
+        // where in for-in loop
+        var numArray : [Int] = [0,1,2,3,4,5,6,7,8,9]
+        var newNumArray = numArray.filter() {$0%3==0}
+        for num in newNumArray where num%2==0 {
+            print("num: \(num)")
+        }
+        
         // SAMPLE HTTP REQUEST
         if let url = URL(string: "https://www.facebook.com") {
             //let session = URLSession.init(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
@@ -80,16 +87,16 @@ class ViewController: UIViewController {
             task.resume()
         }
         
+        // AUTORELEASEPOOL
         autoreleasepool {
             /* code */
         }
         
+        // C POINTERS
         var remainder : Int32 = 5
         //let remainderPointer = UnsafeMutablePointer<Int32>(&remainder)
         var division = quotient(10, 3, &remainder/*remainderPointer*/)
         print("division: \(division) remainder: \(remainder)")
-        
-        
         
         func takesARawPointer(_ p: UnsafeRawPointer?)  {
         }
@@ -109,8 +116,7 @@ class ViewController: UIViewController {
         var zz: NSDate? = nil
         takesAnAutoreleasingPointer(&zz)
         
-        
-        
+        // as sample
         var object: Any? = SomeClass()
         if let can = object as? SomeClass {
             print("SomeClass")
@@ -118,15 +124,12 @@ class ViewController: UIViewController {
             print("not SomeClass")
         }
         
-        
+        // selector usage
         let array: NSArray = ["delta", "alpha", "zulu"]
         // Not a compile-time error because NSDictionary has this selector.
         let selector1 = #selector(NSDictionary.allKeys(for:))
         // Raises an exception because NSArray does not respond to this selector.
         //array.perform(selector1)
-        
-        
-        
         
         
         let string: NSString = "Hello, Cocoa!"
@@ -149,7 +152,8 @@ class ViewController: UIViewController {
         do {
         //let initializer: (Int) -> String = String.init
         let initializer: (Int) -> String = String.self.init
-        let oneTwoThree = [1, 2, 3].map(initializer).reduce("start:", +)
+        //let oneTwoThree = [1, 2, 3].map(initializer).reduce("start:", +)
+        let oneTwoThree = [1, 2, 3].reduce(0, +)
         print(oneTwoThree)
         }
         
@@ -195,6 +199,7 @@ class ViewController: UIViewController {
         f1(xxx as Any)
         // Prints "Function for Any"
         
+        var myFunction0 : (Int, Int) -> Int = { (x: Int, y: Int) -> Int in return x + y }
         var myFunction1 = { (x: Int, y: Int) -> Int in return x + y }
         var myFunction2 : (Int, Int) -> Int = { x, y in return x + y }
         var myFunction3 : (Int, Int) -> Int = { return $0 + $1 }
