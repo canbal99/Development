@@ -375,16 +375,21 @@ class ViewController: UIViewController {
         
         // ERROR HANDLING
         func someThrowingFunction() throws -> Int {
-            return 0
+            throw SampleClass.SandwichError.insufficientFunds(coinsNeeded: 5)
+            //return 0
         }
         
         var x = try? someThrowingFunction()
-        let y: Int?
+        var y: Int? = nil
         do {
             y = try someThrowingFunction()
-        } catch {
-            y = nil
+        } catch let err where err is Int  {
+            print("y is \(err)")
+            print("y is \(err.localizedDescription)")
+        } catch let err {
+            print("y is \(err.localizedDescription)")
         }
+        
         if x != nil {
             x = y
         }

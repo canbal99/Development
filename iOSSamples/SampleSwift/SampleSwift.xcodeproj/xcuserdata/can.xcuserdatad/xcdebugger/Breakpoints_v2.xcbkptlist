@@ -6,59 +6,11 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SampleSwift/ViewController.swift"
-            timestampString = "527416121.582606"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "167"
-            endingLineNumber = "167"
-            landmarkName = "onButtonClicked(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SampleSwift.ViewController.onButtonClicked(Any) -&gt; ()"
-                  moduleName = "SampleSwift"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/can/Development/GitHub/development/iOSSamples/SampleSwift/SampleSwift/ViewController.swift"
-                  timestampString = "527416121.788714"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "167"
-                  endingLineNumber = "167"
-                  offsetFromSymbolStart = "12878">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #4 (SampleSwift.SomeClass, Foundation.NSKeyValueObservedChange&lt;Swift.Int&gt;) -&gt; () in SampleSwift.ViewController.onButtonClicked(Any) -&gt; ()"
-                  moduleName = "SampleSwift"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/can/Development/GitHub/development/iOSSamples/SampleSwift/SampleSwift/ViewController.swift"
-                  timestampString = "527416121.792038"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "168"
-                  endingLineNumber = "168"
-                  offsetFromSymbolStart = "69">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SampleSwift/ViewController.swift"
-            timestampString = "527416121.583259"
+            timestampString = "527504901.757846"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "81"
@@ -74,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SampleSwift/ViewController.swift"
-            timestampString = "527416121.583696"
+            timestampString = "527504901.758349"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "74"
