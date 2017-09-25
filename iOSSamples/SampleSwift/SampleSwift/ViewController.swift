@@ -10,9 +10,14 @@ import UIKit
 
 // https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Functions.html
 
+
+var lazyInt: () = {
+    print("This is printed only on the first call to test()")
+}()
+
 class Foo: NSObject {
     @objc dynamic var bar = 0
-    
+
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(Foo.bar) {
             if let myObject = object as? Foo {
@@ -26,6 +31,20 @@ class SomeClass: NSObject {
     @objc dynamic var someProperty: Int
     init(someProperty: Int = 10) {
         self.someProperty = someProperty
+    }
+}
+
+var OnOff : Bool = { return true }()
+extension ViewController : URLSessionDelegate {
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+        OnOff = !OnOff
+        if OnOff {
+            if let serverTrust = challenge.protectionSpace.serverTrust {
+                completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust:serverTrust))
+            }
+        } else {
+            completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
+        }
     }
 }
 
@@ -67,6 +86,10 @@ class ViewController: UIViewController {
     @IBAction func onButtonClicked(_ sender: Any) {
         self.labelText.text = self.textField.text
         
+        print("This is printed for each call to onButtonClicked1()")
+        print("Lazy int: \(lazyInt)")
+        print("This is printed for each call to onButtonClicked2()")
+
         // where in for-in loop
         var numArray : [Int] = [0,1,2,3,4,5,6,7,8,9]
         var newNumArray = numArray.filter() {$0%3==0}
@@ -76,12 +99,38 @@ class ViewController: UIViewController {
         
         // SAMPLE HTTP REQUEST
         if let url = URL(string: "https://www.facebook.com") {
-            //let session = URLSession.init(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-            let task = URLSession.shared.dataTask(with: url) { (data:Data?, response:URLResponse?, error:Error?) in
+            var request: URLRequest = URLRequest.init(url: url)
+            let task = URLSession.shared.dataTask(with: request) { (data:Data?, response:URLResponse?, error:Error?) in
                 if let error = error {
                     print(error.localizedDescription)
                 } else if let string = String.init(data: data!, encoding: String.Encoding.utf8) {
                     print(string)
+                }
+            }
+            task.resume()
+        }
+        if let url = URL(string: "https://jsonplaceholder.typicode.com/posts/1") {
+            var urlSession: URLSession = URLSession.init(configuration: URLSessionConfiguration.ephemeral, delegate: self, delegateQueue: nil)
+            
+            var request: URLRequest = URLRequest.init(url: url)
+            //request.httpMethod = "POST"
+            //request.httpBody = String("my test data").data(using: .utf8)
+            let task = urlSession.dataTask(with: request) { (data:Data?, response:URLResponse?, error:Error?) in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else if let jsonData = data {
+                    print(String.init(data: jsonData, encoding: String.Encoding.utf8) as Any)
+                    if let json = try? JSONSerialization.jsonObject(with: jsonData, options: []) {
+                        switch json {
+                        case let dict as Dictionary<String,Any>:
+                            for item in dict {
+                                print(item)
+                            }
+                        default:
+                            print("not a dictionary")
+                        }
+                    }
+                    
                 }
             }
             task.resume()
@@ -222,8 +271,8 @@ class ViewController: UIViewController {
         print(self.myObject.writeFullName())
         print("Signature: ", self.myObject.signature)
         
-        let http404Error = (statusCode: 404, description: "Not Found")
-        print("HTTP Error: \(http404Error.0) \(http404Error.description)")
+        let sip404Error = (statusCode: 404, description: "Not Found")
+        print("Sip Error: \(sip404Error.0) \(sip404Error.description)")
         
         // FOR LOOPS
         for index in 1...5 {
@@ -394,7 +443,7 @@ class ViewController: UIViewController {
             x = y
         }
         // disables error probogation and will give a runtime error if there is a problem
-        x = try! someThrowingFunction()
+        x = try? someThrowingFunction()
         
         func exists(_ filename: String) -> Bool {return true}
         func open(_ filename: String) -> Int {return 0}

@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SampleSwift/ViewController.swift"
-            timestampString = "528024970.104383"
+            filePath = "DogeChat/ChatRoom.swift"
+            timestampString = "528042913.568779"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
-            landmarkName = "onButtonClicked(_:)"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "setupNetworkCommunication()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SampleSwift/ViewController.swift"
-            timestampString = "528024970.104982"
+            filePath = "DogeChat/ChatRoom.swift"
+            timestampString = "528042913.568857"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
-            landmarkName = "urlSession(_:didReceive:completionHandler:)"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "stopChatSession()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
