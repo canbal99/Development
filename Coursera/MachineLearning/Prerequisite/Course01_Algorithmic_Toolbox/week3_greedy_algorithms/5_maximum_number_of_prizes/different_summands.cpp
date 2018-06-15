@@ -6,6 +6,19 @@ using std::vector;
 vector<int> optimal_summands(int n) {
   vector<int> summands;
   //write your code here
+  int sum = 0;
+  int i = 1;
+  while (true) {
+      if (sum+i <= n) {
+          sum += i;
+          summands.push_back(i);
+      } else {
+          summands[summands.size()-1] += n-sum;
+          break;
+      }
+      i++;
+  }
+  
   return summands;
 }
 

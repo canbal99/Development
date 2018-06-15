@@ -7,6 +7,8 @@ using std::vector;
 long long max_dot_product(vector<int> a, vector<int> b) {
   // write your code here
   long long result = 0;
+  std::sort(a.begin(), a.end());
+  std::sort(b.begin(), b.end());
   for (size_t i = 0; i < a.size(); i++) {
     result += ((long long) a[i]) * b[i];
   }

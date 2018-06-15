@@ -12,9 +12,17 @@ int gcd_naive(int a, int b) {
   return current_gcd;
 }
 
+int gcd_fast(int a, int b) {
+  int min = a<b ? a:b;
+  int max = a<b ? b:a;
+  if (min==0) return max;
+  return gcd_fast(min,max%min);
+}
+
 int main() {
   int a, b;
   std::cin >> a >> b;
-  std::cout << gcd_naive(a, b) << std::endl;
+  //std::cout << gcd_naive(a, b) << std::endl;
+  std::cout << gcd_fast(a, b) << std::endl;
   return 0;
 }
