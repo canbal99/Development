@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using std::vector;
 
@@ -65,7 +66,8 @@ int lcs2(vector<int> &aaa, vector<int> &bbb) {
             std::cout << editDistance[y][x].oper << " ";
         }
         std::cout << "\n";
-    }*/
+    }
+    */
     int lcs = 0;
     int x = bbb.size();
     int y = aaa.size();
@@ -81,7 +83,92 @@ int lcs2(vector<int> &aaa, vector<int> &bbb) {
     //return editDistance[aaa.size()][bbb.size()].dist;
 }
 
+bool compareArray(vector<int> &aaa, vector<int> &bbb) {
+    if (aaa.size()!=bbb.size()) return false;
+    for (int i=0;i<aaa.size();i++) {
+        if (aaa[i]!=bbb[i]) return false;
+    }
+    return true;
+}
+
+vector<int> getSubArray(int subArray, vector<int> &array) {
+    vector<int> result;
+    int index = array.size()-1;
+    while (subArray>0) {
+        if (subArray%2 == 1)  {
+            result.push_back(array[index]);
+        }
+        subArray = subArray / 2;
+        index--;
+    }
+    return result;
+}
+
+int lcs2_naive(vector<int> &aaa, vector<int> &bbb) {
+    
+    //std::sort(aaa.begin(), aaa.end());
+    //std::sort(bbb.begin(), bbb.end());
+    int probA = pow(2,aaa.size());
+    int probB = pow(2,bbb.size());
+    
+    int max_lcs = 0;
+    for (int i=0;i<probA;i++) {
+        for (int j=0;j<probB;j++) {
+            vector<int> aaaSubArray = getSubArray(i,aaa);
+            vector<int> bbbSubArray = getSubArray(j,bbb);
+            if (compareArray(aaaSubArray, bbbSubArray)) {
+                if (aaaSubArray.size()>max_lcs) {
+                    max_lcs = aaaSubArray.size();
+                }
+            }
+        }
+    }
+    
+    return max_lcs;
+}
+
+
+
+bool compare(vector<int> x, vector<int> y) {
+    clock_t begin_time, end_time;
+    begin_time = clock();
+    int fast = lcs2(x,y);
+    end_time = clock();
+    std::cout << "fast: " << fast << " in " << (end_time-begin_time)/1000 << "ms\n";
+    begin_time = clock();
+    int naive = lcs2_naive(x,y);
+    end_time = clock();
+    std::cout << "naive: " << naive << " in " << (end_time-begin_time)/1000 << "ms\n";
+    return fast == naive;
+}
+
+#define RANDOMSIZE()   2+(rand()%8)//2+(rand()%100)
+#define RANDOMITEM()   ((rand()%10)-5)//((rand()%2000000000)-1000000000)
+void test_solution() {
+    const int TEST_COUNT = 100;
+    std::cout << "Test started !!!\n";
+    for (int i=0;i<TEST_COUNT;i++) {
+        int size = RANDOMSIZE();
+        std::cout << "Test for " << i << ":" << size << "\n";
+        vector<int> x(size);
+        vector<int> y(size);
+        for (int j=0;j<size;j++) {
+            x[j] = RANDOMITEM();
+            y[j] = RANDOMITEM();
+        }
+        if (!compare(x, y)) {
+            std::cout << "error!!!\n";
+            return;
+        }
+    }
+    std::cout << "Test succeeded !!!\n";
+}
+
 int main() {
+    
+    //test_solution();
+    //return 0;
+            
   size_t n;
   std::cin >> n;
   vector<int> a(n);

@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/8c5311f/lcs2.o \
 	${OBJECTDIR}/main.o
 
 
@@ -62,11 +61,6 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/_ext/8c5311f/lcs2.o: ../week5_dynamic_programming1/4_longest_common_subsequence_of_two_sequences/lcs2.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/8c5311f
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8c5311f/lcs2.o ../week5_dynamic_programming1/4_longest_common_subsequence_of_two_sequences/lcs2.cpp
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
