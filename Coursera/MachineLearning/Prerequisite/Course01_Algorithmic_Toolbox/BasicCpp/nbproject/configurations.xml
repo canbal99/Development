@@ -13,6 +13,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
+      <itemPath>../week6_dynamic_programming2/3_maximum_value_of_an_arithmetic_expression/placing_parentheses.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -39,6 +40,11 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
+      <item path="../week6_dynamic_programming2/3_maximum_value_of_an_arithmetic_expression/placing_parentheses.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -63,6 +69,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="../week6_dynamic_programming2/3_maximum_value_of_an_arithmetic_expression/placing_parentheses.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
