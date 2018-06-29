@@ -45,33 +45,142 @@ long long get_maximum_value(const string &exp) {
     }
     std::cout << "num:" << numbers[opers.size()] << '\n';*/
     
-    vector< vector<long long> > map(numbers.size());
-    std::for_each(map.begin(), map.end(), [numbers](vector<long long>& v) {
+    vector< vector<long long> > matrixMin(numbers.size());
+    vector< vector<long long> > matrixMax(numbers.size());
+    std::for_each(matrixMin.begin(), matrixMin.end(), [numbers](vector<long long>& v) {
+        v = vector<long long>(numbers.size());
+    });
+    std::for_each(matrixMax.begin(), matrixMax.end(), [numbers](vector<long long>& v) {
         v = vector<long long>(numbers.size());
     });
     
     for (int i=0;i<numbers.size();i++) {
-        map[i][i] = numbers[i];
+        matrixMin[i][i] = numbers[i];
+        matrixMax[i][i] = numbers[i];
     }
-    int value = 0;
+    
+    int value;
     for (int i=1;i<numbers.size();i++) {
-        for (int j=0;j<numbers.size()-i;j++) {
-            value = eval(map[j][j+i-1], numbers[j+i], opers[j+i-1]);
-            if (map[j][j+i] < value) {
-                map[j][j+i] = value;
+        for (int j=0;j<numbers.size()-i;j++) { // j=0 i=3
+            for (int k=1;k<=i;k++) {
+                if (opers[j+i-k]=='+') {
+                    value = eval(matrixMin[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                    if (matrixMin[j][j+i] > value || k==1) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    value = eval(matrixMax[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                    if (matrixMax[j][j+i] < value || k==1) {
+                        matrixMax[j][j+i] = value;
+                    }
+                }
+                else if (opers[j+i-k]=='-') {
+                    value = eval(matrixMin[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                    if (matrixMin[j][j+i] > value || k==1) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    value = eval(matrixMax[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                    if (matrixMax[j][j+i] < value || k==1) {
+                        matrixMax[j][j+i] = value;
+                    }
+                }
+                else {
+                    value = eval(matrixMin[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                    //std::cout << matrixMin[j][j+i-k] << opers[j+i-k] << matrixMin[j+i+1-k][j+i] << '=' << value << "\n";
+                    if (matrixMin[j][j+i] > value || k==1) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    if (matrixMax[j][j+i] < value || k==1) {
+                        matrixMax[j][j+i] = value;
+                    }
+
+                    value = eval(matrixMin[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                    //std::cout << matrixMin[j][j+i-k] << opers[j+i-k] << matrixMax[j+i+1-k][j+i] << '=' << value << "\n";
+                    if (matrixMin[j][j+i] > value) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    if (matrixMax[j][j+i] < value) {
+                        matrixMax[j][j+i] = value;
+                    }
+
+                    value = eval(matrixMax[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                    //std::cout << matrixMax[j][j+i-k] << opers[j+i-k] << matrixMin[j+i+1-k][j+i] << '=' << value << "\n";
+                    if (matrixMin[j][j+i] > value) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    if (matrixMax[j][j+i] < value) {
+                        matrixMax[j][j+i] = value;
+                    }
+
+                    value = eval(matrixMax[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                    //std::cout << matrixMax[j][j+i-k] << opers[j+i-k] << matrixMax[j+i+1-k][j+i] << '=' << value << "\n";
+                    if (matrixMin[j][j+i] > value) {
+                        matrixMin[j][j+i] = value;
+                    }
+                    if (matrixMax[j][j+i] < value) {
+                        matrixMax[j][j+i] = value;
+                    }
+                }
             }
         }
     }
+    /*for (int i=1;i<numbers.size();i++) {
+        for (int j=0;j<numbers.size()-i;j++) { // j=0 i=3
+            for (int k=1;k<=i;k++)
+            {
+                value = eval(matrixMin[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                //std::cout << matrixMin[j][j+i-k] << opers[j+i-k] << matrixMin[j+i+1-k][j+i] << '=' << value << "\n";
+                if (matrixMin[j][j+i] > value || k==1) {
+                    matrixMin[j][j+i] = value;
+                }
+                if (matrixMax[j][j+i] < value || k==1) {
+                    matrixMax[j][j+i] = value;
+                }
+                
+                value = eval(matrixMin[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                //std::cout << matrixMin[j][j+i-k] << opers[j+i-k] << matrixMax[j+i+1-k][j+i] << '=' << value << "\n";
+                if (matrixMin[j][j+i] > value) {
+                    matrixMin[j][j+i] = value;
+                }
+                if (matrixMax[j][j+i] < value) {
+                    matrixMax[j][j+i] = value;
+                }
+                
+                value = eval(matrixMax[j][j+i-k], matrixMin[j+i+1-k][j+i], opers[j+i-k]);
+                //std::cout << matrixMax[j][j+i-k] << opers[j+i-k] << matrixMin[j+i+1-k][j+i] << '=' << value << "\n";
+                if (matrixMin[j][j+i] > value) {
+                    matrixMin[j][j+i] = value;
+                }
+                if (matrixMax[j][j+i] < value) {
+                    matrixMax[j][j+i] = value;
+                }
+                
+                value = eval(matrixMax[j][j+i-k], matrixMax[j+i+1-k][j+i], opers[j+i-k]);
+                //std::cout << matrixMax[j][j+i-k] << opers[j+i-k] << matrixMax[j+i+1-k][j+i] << '=' << value << "\n";
+                if (matrixMin[j][j+i] > value) {
+                    matrixMin[j][j+i] = value;
+                }
+                if (matrixMax[j][j+i] < value) {
+                    matrixMax[j][j+i] = value;
+                }
+            }
+        }
+    }*/
     
     for (int i=0;i<numbers.size();i++) {
         for (int j=0;j<numbers.size();j++) {
-            printf("%03d ", map[i][j]);
-            //std::cout << map[i][j] << " ";
+            printf("%03lld ", matrixMin[i][j]);
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+    for (int i=0;i<numbers.size();i++) {
+        for (int j=0;j<numbers.size();j++) {
+            printf("%03lld ", matrixMax[i][j]);
         }
         std::cout << "\n";
     }
     
-    return 0;
+    return matrixMax[0][numbers.size()-1];
 }
 
 int main() {
