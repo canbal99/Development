@@ -13,7 +13,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
-      <itemPath>../Course03_Algorithms_on_Graph/week04_Decomposition_of_Graphs/10_paths_in_graphs_starter_files_2/shortest_paths/shortest_paths.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -40,11 +39,6 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
-      <item path="../Course03_Algorithms_on_Graph/week04_Decomposition_of_Graphs/10_paths_in_graphs_starter_files_2/shortest_paths/shortest_paths.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -69,11 +63,6 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="../Course03_Algorithms_on_Graph/week04_Decomposition_of_Graphs/10_paths_in_graphs_starter_files_2/shortest_paths/shortest_paths.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
