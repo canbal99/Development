@@ -35,7 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/ea2d4e53/strongly_connected.o \
+	${OBJECTDIR}/_ext/91791b78/shortest_paths.o \
 	${OBJECTDIR}/main.o
 
 
@@ -63,10 +63,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/ea2d4e53/strongly_connected.o: ../Course03_Algorithms_on_Graph/week02_Decomposition_of_Graphs/graph_decomposition_starter_files_2/strongly_connected/strongly_connected.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/ea2d4e53
+${OBJECTDIR}/_ext/91791b78/shortest_paths.o: ../Course03_Algorithms_on_Graph/week04_Decomposition_of_Graphs/10_paths_in_graphs_starter_files_2/shortest_paths/shortest_paths.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/91791b78
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/ea2d4e53/strongly_connected.o ../Course03_Algorithms_on_Graph/week02_Decomposition_of_Graphs/graph_decomposition_starter_files_2/strongly_connected/strongly_connected.cpp
+	$(COMPILE.cc) -O2 -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/91791b78/shortest_paths.o ../Course03_Algorithms_on_Graph/week04_Decomposition_of_Graphs/10_paths_in_graphs_starter_files_2/shortest_paths/shortest_paths.cpp
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
