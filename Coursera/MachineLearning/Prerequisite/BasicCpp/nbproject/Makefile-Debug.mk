@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/559ceb9c/dist_with_coords.o \
 	${OBJECTDIR}/main.o
 
 
@@ -61,6 +62,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/basiccpp ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/559ceb9c/dist_with_coords.o: ../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_with_coords/dist_with_coords.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/559ceb9c
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -std=c++14 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/559ceb9c/dist_with_coords.o ../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_with_coords/dist_with_coords.cpp
 
 ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
