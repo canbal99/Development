@@ -6,8 +6,6 @@
 #include <utility>
 #include <cmath>
 #include <iostream>
-#include <unordered_set>
-#include <unordered_map>
 
 using namespace std;
 using std::cout;
@@ -25,12 +23,12 @@ const Len INFINITY_ = numeric_limits<Len>::max() / 4;
 class AStar {
     // See the descriptions of these fields in the starter for friend_suggestion
     int n_;
-    const Adj &adj_;
-    const Adj &cost_;
+    Adj adj_;
+    Adj cost_;
     vector<vector<Len>> distance_;
     vector<int> workset_;
     //vector<bool> visited_;
-    vector<unordered_set<int>> processedset_;
+    vector<vector<bool>> processed_;
     // Coordinates of the nodes
     std::vector<std::pair<Len,Len>> xy_;
     bool usePotential_;
@@ -38,18 +36,17 @@ class AStar {
 
 public:
     AStar(int n, Adj& adj, Adj& cost, std::vector<std::pair<Len,Len>> xy, bool usePotential=true)
-        : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n_, INFINITY_)), processedset_(2,unordered_set<int>(n)), xy_(xy),
+        : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n_, INFINITY_)), processed_(2,vector<bool>(n,false)), xy_(xy),
                 usePotential_(usePotential)
-        { workset_.reserve(n); processedset_[F].reserve(n); processedset_[R].reserve(n); }
+        { workset_.reserve(n); }
 
     // See the description of this method in the starter for friend_suggestion
     void clear() {
         for (int v : workset_) {
             distance_[0][v] = distance_[1][v] = INFINITY_;
+            processed_[0][v] = processed_[1][v] = false;
         }
         workset_.clear();
-        processedset_[F].clear();
-        processedset_[R].clear();
     }
 
     // See the description of this method in the starter for friend_suggestion
@@ -63,27 +60,19 @@ public:
     }
     
     inline Len getDistance(int p1, int p2) {
-        Len xDiff = xy_[p1].first-xy_[p2].first;
-        Len yDiff = xy_[p1].second-xy_[p2].second;
-        return sqrt(xDiff*xDiff+yDiff*yDiff);
+        return sqrt(pow(xy_[p1].first-xy_[p2].first,2)+pow(xy_[p1].second-xy_[p2].second,2));
     }
     
-    Len getPotential(int side, int v) {
-        if (!usePotential_)
-            return 0;
-        //if (potential_.count(v)==0) {
-            int potential = (getDistance(v,target) - getDistance(v,source)) / 2;
-        //    potential_[v] = potential;
-            return (side ? -1*potential : potential);
-        //}
-        //return (side?-1:1)*potential_[v];
+    inline Len getPotential(int side, int v) {
+        if (!usePotential_) return 0;
+        return (side ? -1 : 1) * (getDistance(v,target) - getDistance(v,source)) / 2;;
     }
     
     void process(Queue& q, int side, int v) {
         // Implement this method yourself
         int adj;
         Len newDist;
-        processedset_[side].insert(v);
+        processed_[side][v] = true;
         Len dist = distance_[side][v];
         //cout << "\nProcessing(" << (side?"R":"F") << "):" << v+1 << "(dist:" << dist << ") => Checking:";
         for (int i=adj_[side][v].size()-1; i>=0; i--) {
@@ -100,11 +89,7 @@ public:
     Len returnShortest() {
         Len minimum = INFINITY_;
         Len candidate;
-        for (int v : processedset_[F]) {
-            candidate = distance_[F][v] + distance_[R][v];
-            if (minimum > candidate) minimum = candidate;
-        }
-        for (int v : processedset_[R]) {
+        for (int v : workset_) {
             candidate = distance_[F][v] + distance_[R][v];
             if (minimum > candidate) minimum = candidate;
         }
@@ -125,34 +110,34 @@ public:
         int f,r;
         while (!q[F].empty() || !q[R].empty()) {
             
-            if (!q[F].empty()) {
+            while (!q[F].empty()) {
                 f = q[F].top().second;q[F].pop();
-                if (processedset_[F].count(f)==0)
+                if (!processed_[F][f])
                 {
                     process(q, F, f);
-                    if (processedset_[R].count(f)==1) {
+                    if (processed_[R][f]) {
                         return returnShortest();
                     }
+                    break;
                 }
             }
             
-            if (!q[R].empty()) {
+            while (!q[R].empty()) {
                 r = q[R].top().second;q[R].pop();
-                if (processedset_[R].count(r)==0)
+                if (!processed_[R][r])
                 {
                     process(q, R, r);
-                    if (processedset_[F].count(r)==1) {
+                    if (processed_[F][r]) {
                         return returnShortest();
                     }
+                    break;
                 }
             }
         }
 
         return -1;
     }
-    int getProcessedCount() {
-        return processedset_[F].size() + processedset_[R].size();
-    }
+    
     int getWorksetCount() {
         return workset_.size();
     }
@@ -271,8 +256,8 @@ void test_() {
         Len resDijks = dijks.query(source,dest);
         elapsed.stop("Dijkstra query");
         //cout << "sample cost:" << COST << "\n";
-        cout << "astar:" << resAStar << " processed:" << astar.getProcessedCount() << " workset:" << astar.getWorksetCount() << "\n";
-        cout << "dijks:" << resDijks << " processed:" << dijks.getProcessedCount() << " workset:" << dijks.getWorksetCount() << "\n";
+        cout << "astar:" << resAStar << " workset:" << astar.getWorksetCount() << "\n";
+        cout << "dijks:" << resDijks << " workset:" << dijks.getWorksetCount() << "\n";
         
         if (resAStar != resDijks) {
             printf(DISP "==" DISP "\n", resAStar, resDijks);
