@@ -12,7 +12,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_with_coords/dist_with_coords.cpp</itemPath>
+      <itemPath>../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_preprocess_small/dist_preprocess_small.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -40,7 +40,7 @@
           <standard>11</standard>
         </ccTool>
       </compileType>
-      <item path="../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_with_coords/dist_with_coords.cpp"
+      <item path="../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_preprocess_small/dist_preprocess_small.cpp"
             ex="false"
             tool="1"
             flavor2="0">
@@ -69,7 +69,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_with_coords/dist_with_coords.cpp"
+      <item path="../Course03_Algorithms_on_Graph/week06_Decomposition_of_Graphs/Advanced-Shortest-Paths/dist_preprocess_small/dist_preprocess_small.cpp"
             ex="false"
             tool="1"
             flavor2="0">
