@@ -133,8 +133,8 @@ public:
             }
             
             importance = do_shortcut(v, shortcuts, level);
-            shortcuts.clear();
             queue.push(make_pair(importance,v));
+            shortcuts.clear();
         }
 
         // Implement the rest of the algorithm yourself
